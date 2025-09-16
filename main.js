@@ -68,7 +68,7 @@ console.warn = function (msg, ...args) {
 const loader = new GLTFLoader();
 
 //fixed root as default is /public
-const url = "/models/Chicken.glb";
+const url = "./models/Chicken.glb";
 
 //adding mixer and clock here for Animation()
 let mixer; // optional if using animations, calling mixer outside so animate can acess
