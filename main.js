@@ -1,3 +1,10 @@
+//vite configuration for deployment
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  base: "/chicken-invite/", // <-- replace with your GitHub repo name
+});
+
 // import * as THREE from "three";
 async function loadThree() {
   const THREE = await import("three");
