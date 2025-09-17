@@ -5,7 +5,6 @@ async function loadThree() {
 } // splitting js into smaller chunks
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-//adding an animation
 
 //----Setup scene, camera, renderer---///
 const scene = new THREE.Scene();
