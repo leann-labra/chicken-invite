@@ -51,6 +51,14 @@ scene.add(directionalLight);
 scene.add(directionalLight.target);
 console.log("Directional lights added", directionalLight);
 
+//adding hemispherelight
+const bluesky = 0xfff6b1;
+const intensity = 1;
+const hemisphereLight = new THREE.HemisphereLight(bluesky, intensity);
+scene.add(hemisphereLight);
+
+//adding spotlight
+
 //ADDING ORBITAL CONTROLS AND SUPPRESSING CODE BC GLB WAS MADE USING OLD EXTENSION//
 // OrbitControls
 const controls = new OrbitControls(camera, renderer.domElement);
