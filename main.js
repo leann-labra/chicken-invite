@@ -88,40 +88,46 @@ loader.load(url, (gltf) => {
   //----TEXTURES ADDED MANUALLY----///
   const textureLoader = new THREE.TextureLoader();
   //color of chicken is included
-  const diffuseMap = textureLoader.load("/models/gltf_embedded_0.png"); //diffuseMap is color base
+  const diffuseMap = textureLoader.load("./models/gltf_embedded_0.png"); //diffuseMap is color base
+  console.log(diffuseMap, "diffuseMap loaded");
   //roughness is to describe how smooth image is
-  const roughnessMap = textureLoader.load("/models/gltf_embedded_2.png");
+  const roughnessMap = textureLoader.load("./models/gltf_embedded_2.png");
   //normal map
   const wingLightMap = textureLoader.load(
-    "/models/gltf_embedded_3@channels=R.png"
+    "./models/gltf_embedded_3@channels=R.png"
   );
 
   model.traverse((child) => {
-    if (child.isMesh && child.material) {
-      //adding diffuse map directly or base color
-      child.material.map = diffuseMap;
-      const baseColorMap = child.material.map;
-
-      //adding roughness directly
-      child.material.roughness = roughnessMap;
-      if (!child.material.roughnessMap) {
-        child.material.roughnessMap = baseColorMap; //fallback
-        child.material.roughness = 2;
-        child.material.needsUpdate = true;
+    if (child.isMesh) {
+      // Always ensure the material is MeshStandardMaterial
+      if (!(child.material instanceof THREE.MeshStandardMaterial)) {
+        child.material = new THREE.MeshStandardMaterial();
       }
 
-      //adding normal maps directly
-      child.material.normalMap = wingLightMap;
-      child.material.normalScale = new THREE.Vector2(2, 2); // reduce normal intensity
+      // Add textures
+      child.material.map = roughnessMap; // base color
+      child.material.roughnessMap = roughnessMap; // roughness texture
+      child.material.normalMap = wingLightMap; // normal map
 
-      //chicken shadows
-      child.castShadow = true; // chicken casts shadow
-      // child.receiveShadow = true; // chicken can receive shadows from other objects
+      // Adjust parameters
+      child.material.roughness = 1; // fallback numeric roughness
+      child.material.normalScale = new THREE.Vector2(1, 1);
 
+      // Shadows
+      child.castShadow = true;
+      child.receiveShadow = true;
+
+      // Force material update
       child.material.needsUpdate = true;
 
-      //console.logging to check if added
-      console.log("base color texture added", child.material.map);
+      //checking to see if image is a UV mismatch
+      console.log(child.material.map?.image);
+      // Debugging
+      console.log("Applied maps:", {
+        map: child.material.map,
+        roughnessMap: child.material.roughnessMap,
+        normalMap: child.material.normalMap,
+      });
     }
   });
 
