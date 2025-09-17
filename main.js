@@ -105,7 +105,7 @@ loader.load(url, (gltf) => {
       }
 
       // Add textures
-      child.material.map = roughnessMap; // base color
+      child.material.map = diffuseMap; // base color
       child.material.roughnessMap = roughnessMap; // roughness texture
       child.material.normalMap = wingLightMap; // normal map
 
