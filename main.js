@@ -1,15 +1,9 @@
-//vite configuration for deployment
-import { defineConfig } from "vite";
-
-export default defineConfig({
-  base: "/chicken-invite/", // <-- replace with your GitHub repo name
-});
-
-// import * as THREE from "three";
-async function loadThree() {
-  const THREE = await import("three");
-  return THREE;
-} // splitting js into smaller chunks
+import * as THREE from "three";
+// async function loadThree() {
+//   const THREE = await import("three");
+//   return THREE;
+// } // splitting js into smaller chunks
+// loadThree();
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
@@ -66,8 +60,7 @@ const bluesky = 0xfff6b1;
 const intensity = 1;
 const hemisphereLight = new THREE.HemisphereLight(bluesky, intensity);
 scene.add(hemisphereLight);
-
-//adding spotlight
+console.log("hemisphereLight added", hemisphereLight);
 
 //ADDING ORBITAL CONTROLS AND SUPPRESSING CODE BC GLB WAS MADE USING OLD EXTENSION//
 // OrbitControls
@@ -85,8 +78,8 @@ console.warn = function (msg, ...args) {
 // Load GLB file
 const loader = new GLTFLoader();
 
-//fixed root as default is /public
-const url = "./models/Chicken.glb";
+//including repo name for vite config
+const url = "chicken-invite/models/Chicken.glb";
 
 //adding mixer and clock here for Animation()
 let mixer; // optional if using animations, calling mixer outside so animate can acess
@@ -106,48 +99,58 @@ loader.load(url, (gltf) => {
   //----TEXTURES ADDED MANUALLY----///
   const textureLoader = new THREE.TextureLoader();
   //color of chicken is included
-  const diffuseMap = textureLoader.load("./models/gltf_embedded_0.png"); //diffuseMap is color base
+  const diffuseMap = textureLoader.load(
+    "/chicken-invite/models/gltf_embedded_0.png"
+  ); //diffuseMap is color base
   console.log(diffuseMap, "diffuseMap loaded");
+
   //roughness is to describe how smooth image is
-  const roughnessMap = textureLoader.load("./models/gltf_embedded_2.png");
-  //normal map
-  const wingLightMap = textureLoader.load(
-    "./models/gltf_embedded_3@channels=R.png"
+  const roughnessMap = textureLoader.load(
+    "/chicken-invite/models/gltf_embedded_2.png"
   );
 
-  model.traverse((child) => {
-    if (child.isMesh) {
-      // Always ensure the material is MeshStandardMaterial
-      if (!(child.material instanceof THREE.MeshStandardMaterial)) {
-        child.material = new THREE.MeshStandardMaterial();
+  //normal map
+  const wingLightMap = textureLoader.load(
+    "/chicken-invite/models/gltf_embedded_3@channels=R.png"
+  );
+
+  model.traverse(
+    (child) => {
+      if (child.isMesh) {
+        // Always ensure the material is MeshStandardMaterial
+        if (!(child.material instanceof THREE.MeshStandardMaterial)) {
+          child.material = new THREE.MeshStandardMaterial();
+        }
+
+        // Add textures
+        child.material.map = diffuseMap; // base color
+        child.material.roughnessMap = roughnessMap; // roughness texture
+        child.material.normalMap = wingLightMap; // normal map
+
+        // Adjust parameters
+        child.material.roughness = 1; // fallback numeric roughness
+        child.material.normalScale = new THREE.Vector2(1, 1);
+
+        // Shadows
+        child.castShadow = true;
+        child.receiveShadow = true;
+
+        // Force material update
+        child.material.needsUpdate = true;
+
+        //checking to see if image is a UV mismatch
+        console.log(child.material.map?.image);
+        // Debugging
+        console.log("Applied maps:", {
+          map: child.material.map,
+          roughnessMap: child.material.roughnessMap,
+          normalMap: child.material.normalMap,
+        });
       }
-
-      // Add textures
-      child.material.map = diffuseMap; // base color
-      child.material.roughnessMap = roughnessMap; // roughness texture
-      child.material.normalMap = wingLightMap; // normal map
-
-      // Adjust parameters
-      child.material.roughness = 1; // fallback numeric roughness
-      child.material.normalScale = new THREE.Vector2(1, 1);
-
-      // Shadows
-      child.castShadow = true;
-      child.receiveShadow = true;
-
-      // Force material update
-      child.material.needsUpdate = true;
-
-      //checking to see if image is a UV mismatch
-      console.log(child.material.map?.image);
-      // Debugging
-      console.log("Applied maps:", {
-        map: child.material.map,
-        roughnessMap: child.material.roughnessMap,
-        normalMap: child.material.normalMap,
-      });
-    }
-  });
+    },
+    undefined,
+    (error) => console.error("error loading the GLB file", error)
+  );
 
   //----ADDING FLOOR TO SCENE---//
   const floorGeometry = new THREE.PlaneGeometry(20, 20);
