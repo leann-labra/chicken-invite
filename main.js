@@ -78,11 +78,27 @@ console.warn = function (msg, ...args) {
 // Load GLB file
 const loader = new GLTFLoader();
 
+//dynamic Vite handling instead of hardcoding repo name
+const base = import.meta.env.BASE_URL;
 //including repo name for vite config
-const url = "chicken-invite/public/models/Chicken.glb";
+const url = `${base}models/Chicken.glb`;
 
 //adding mixer and clock here for Animation()
 let mixer; // optional if using animations, calling mixer outside so animate can acess
+
+//----TEXTURES ADDED MANUALLY----///
+const textureLoader = new THREE.TextureLoader();
+//color of chicken is included
+const diffuseMap = textureLoader.load(`${base}models/gltf_embedded_0.png`); //diffuseMap is color base
+console.log(diffuseMap, "diffuseMap loaded");
+//roughness is to describe how smooth image is
+const roughnessMap = textureLoader.load(`${base}models/gltf_embedded_2.png`);
+console.log(roughnessMap, "roughnessMap loaded");
+//normal map
+const wingLightMap = textureLoader.load(
+  `${base}models/gltf_embedded_3@channels=R.png`
+);
+console.log(wingLightMap, "wingLightMap loaded");
 
 //------LOAD MODEL-------//
 loader.load(url, (gltf) => {
@@ -95,24 +111,6 @@ loader.load(url, (gltf) => {
   model.position.set(0, 0, 0);
   model.scale.set(1, 1, 1);
   console.log("model in position", model.position.set(0, 0, 0));
-
-  //----TEXTURES ADDED MANUALLY----///
-  const textureLoader = new THREE.TextureLoader();
-  //color of chicken is included
-  const diffuseMap = textureLoader.load(
-    "/chicken-invite/public/models/gltf_embedded_0.png"
-  ); //diffuseMap is color base
-  console.log(diffuseMap, "diffuseMap loaded");
-
-  //roughness is to describe how smooth image is
-  const roughnessMap = textureLoader.load(
-    "/chicken-invite/public/models/gltf_embedded_2.png"
-  );
-
-  //normal map
-  const wingLightMap = textureLoader.load(
-    "/chicken-invite/public/models/gltf_embedded_3@channels=R.png"
-  );
 
   model.traverse(
     (child) => {
