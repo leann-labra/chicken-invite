@@ -66,6 +66,12 @@ loader.load(
     const model = gltf.scene;
     scene.add(model);
 
+    console.log("model path working", model);
+
+    if (error) {
+      console.error("error loading model", model);
+    }
+
     // Center and scale model
     const box = new THREE.Box3().setFromObject(model);
     const center = box.getCenter(new THREE.Vector3());
@@ -106,7 +112,7 @@ loader.load(
     camera.lookAt(model.position);
   },
   undefined,
-  (error) => console.error("Error loading GLB:", error)
+  (error) => console.error("Error loading chicken", error)
 );
 
 // ---------- Animation Loop ----------
